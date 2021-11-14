@@ -18,10 +18,6 @@ public class CounterStore {
         return _store;
     }
 
-    public void setCount(int count) {
-        this.count.onNext(count);
-    }
-
     public BehaviorSubject<Integer> getCount() {
         return count;
     }

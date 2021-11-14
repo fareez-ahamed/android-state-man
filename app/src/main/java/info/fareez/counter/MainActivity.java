@@ -2,6 +2,7 @@ package info.fareez.counter;
 
 import androidx.appcompat.app.AppCompatActivity;
 import info.fareez.counter.state.CounterStore;
+import io.reactivex.rxjava3.disposables.Disposable;
 
 import android.os.Bundle;
 import android.view.View;
@@ -9,7 +10,9 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private CounterStore counterStore;
+    private final CounterStore counterStore;
+
+    private Disposable _countDisposable;
 
     public MainActivity() {
         super();
@@ -20,11 +23,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.counterStore.onCountChange(count -> {
-            TextView v = (TextView) findViewById(R.id.counterTxt);
+        _countDisposable = this.counterStore.getCount().subscribe(count -> {
+            TextView v = findViewById(R.id.counterTxt);
             v.setText(Integer.toString(count));
         });
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        _countDisposable.dispose();
     }
 
     public void increment(View view) {
